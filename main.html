@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>База питань</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      height: 100%;
+      background: url('photo_5321073822859917202_y.jpg') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    .overlay {
+      backdrop-filter: blur(10px);
+      background-color: rgba(0, 0, 0, 0.6);
+      min-height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      margin: 5px 0;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .question {
+      font-weight: bold;
+    }
+
+    .answer {
+      margin-top: 5px;
+    }
+
+    #results {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <h1>Пошук по базі питань</h1>
+    <input type="file" id="fileInput">
+    <input type="text" id="search" placeholder="Введіть текст для пошуку...">
+    <div id="results"></div>
+  </div>
+
+  <script>
+    let data = [];
+
+    document.getElementById('fileInput').addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        try {
+          data = JSON.parse(e.target.result);
+          alert('Файл успішно завантажено!');
+        } catch (error) {
+          alert('Помилка читання файлу. Перевірте формат JSON.');
+        }
+      };
+
+      reader.readAsText(file);
+    });
+
+    document.getElementById('search').addEventListener('input', function() {
+      const query = this.value.toLowerCase();
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = '';
+
+      if (query.length > 0) {
+        const filtered = data.filter(item => item.question.toLowerCase().includes(query));
+        filtered.forEach(item => {
+          const block = document.createElement('div');
+          block.className = 'result';
+          block.innerHTML = `<div class="question">Питання: ${item.question}</div>
+                              <div class="answer">Відповідь: ${item.answer}</div>`;
+          resultsDiv.appendChild(block);
+        });
+
+        if (filtered.length === 0) {
+          resultsDiv.innerHTML = '<div class="result">Нічого не знайдено</div>';
+        }
+      }
+    });
+  </script>
+</body>
+</html>
